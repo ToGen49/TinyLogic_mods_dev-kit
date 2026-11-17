@@ -70,8 +70,9 @@ end)
 local switches = tl.board.parts("switch")
 
 tl.every(0.5, function()
+    switches = tl.board.parts("switch")
     for _, p in ipairs(switches) do
-        if p.on then tl.sim.toggle(p.id) end
+        tl.sim.toggle(p.id)
     end
 end)
 ```

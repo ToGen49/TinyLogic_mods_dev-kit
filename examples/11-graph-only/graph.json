@@ -2,7 +2,7 @@
  "links": [
   { "from": 1, "to": 2, "out": "next", "in": "exec", "exec": true },
   { "from": 2, "to": 3, "out": "next", "in": "exec", "exec": true },
-  { "from": 1, "to": 4, "out": "next", "in": "exec", "exec": true }
+  { "from": 3, "to": 4, "out": "next", "in": "exec", "exec": true }
  ],
  "nodes": [
   { "id": 1, "type": "event.every", "values": { "seconds": "1" }, "x": 20.0, "y": 20.0 },

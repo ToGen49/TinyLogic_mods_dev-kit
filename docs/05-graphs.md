@@ -8,11 +8,14 @@ Format, as used by the shipped samples:
 {
  "links": [
   { "from": 1, "to": 2, "out": "next", "in": "exec", "exec": true },
-  { "from": 3, "to": 4, "out": "wire", "in": "wire" }
+  { "from": 2, "to": 3, "out": "next", "in": "exec", "exec": true },
+  { "from": 4, "to": 3, "out": "value", "in": "by" }
  ],
  "nodes": [
   { "id": 1, "type": "event.every", "values": { "seconds": "0.15" }, "x": 10.0, "y": 10.0 },
-  { "id": 4, "type": "board.wire_color", "x": 330.0, "y": 40.0 }
+  { "id": 2, "type": "ui.log", "values": { "text": "tick" }, "x": 190.0, "y": 10.0 },
+  { "id": 3, "type": "var.add", "values": { "name": "n" }, "x": 360.0, "y": 10.0 },
+  { "id": 4, "type": "var.get", "values": { "name": "step" }, "x": 190.0, "y": 110.0 }
  ]
 }
 ```
@@ -22,6 +25,15 @@ Format, as used by the shipped samples:
 - `x`/`y` are editor coordinates (floats).
 - `links[]`: `from` → node id, `out` → output pin name, `to` → node id,
   `in` → input pin name, `exec: true` for flow links.
+- Every `from`/`to` must name a node that exists in `nodes[]`.
+
+> **Flow is a chain, not a fan.** A node has exactly **one** `next` slot, and
+> the compiler stores it as `exec_out[from].next = to`. Two `next` links leaving
+> the same node therefore overwrite each other and only the **last** one runs —
+> silently, with no error. To do three things from one event, chain them
+> (`1 → 2 → 3 → 4`), never fan out (`1 → 2`, `1 → 3`, `1 → 4`).
+> The one place a node *does* branch is a named flow output such as
+> `ui.button`'s `clicked`, written `#clicked` in the node's code.
 
 Built-in node categories: **Events, Flow, Math, Logic, Text, Variables, Draw,
 UI, Sound, Camera, Script**. Highlights:

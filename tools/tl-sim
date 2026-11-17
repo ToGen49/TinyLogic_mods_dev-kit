@@ -1,0 +1,79 @@
+#!/usr/bin/env bash
+# Run a Tiny Logic mod without starting the game.
+#
+#   tl-sim <mod-folder>                smoke run: load, run 2 s, report
+#   tl-sim <mod-folder> --test FILE    run one test file against the mod
+#   tl-sim --all                       run every test in sim/tests/
+#
+# Needs a Lua 5.5 interpreter (lua5.5 or lua) on PATH -- that is the same
+# version the game itself uses. Everything else is bash.
+set -euo pipefail
+
+KIT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+
+# ---------------------------------------------------------------- pick a Lua
+LUA="${TINYLOGIC_LUA:-}"
+if [[ -z "$LUA" ]]; then
+    for candidate in lua5.5 lua; do
+        if command -v "$candidate" >/dev/null 2>&1; then
+            if "$candidate" -e 'assert(_VERSION == "Lua 5.5")' 2>/dev/null; then
+                LUA="$candidate"
+                break
+            fi
+            # `lua` exists but is not 5.5: keep it as a last resort, warn below.
+            if [[ -z "$LUA" ]]; then LUA="$candidate"; fi
+        fi
+    done
+fi
+
+if [[ -z "$LUA" ]]; then
+    echo "tl-sim: no Lua interpreter found on PATH." >&2
+    echo "        install Lua 5.5 (the version the game uses), or set TINYLOGIC_LUA." >&2
+    exit 2
+fi
+
+if ! "$LUA" -e 'assert(_VERSION == "Lua 5.5")' 2>/dev/null; then
+    echo "tl-sim: warning: $LUA is $("${LUA}" -v 2>&1 | head -1)," >&2
+    echo "        but the game's prelude.lua targets Lua 5.5. Results may differ." >&2
+fi
+
+# ---------------------------------------------------------------- --all
+WANT_ALL=0
+args=()
+for a in "$@"; do
+    if [[ "$a" == "--all" ]]; then WANT_ALL=1; else args+=("$a"); fi
+done
+
+if [[ "$WANT_ALL" == 1 ]]; then
+    overall=0
+    ran=0
+    missing=0
+    for d in "$KIT"/examples/*/; do
+        [[ -f "$d/mod.json" ]] || continue
+        id="$(basename "$d")"
+        t="$KIT/sim/tests/$id.lua"
+        if [[ ! -f "$t" ]]; then
+            echo "?? $id -- no sim/tests/$id.lua"
+            missing=1
+            continue
+        fi
+        if ! "$LUA" "$KIT/sim/run.lua" "$d" --test "$t" ${args[@]+"${args[@]}"}; then
+            overall=1
+        fi
+        ran=$((ran + 1))
+    done
+
+    echo
+    if [[ "$ran" == 0 ]]; then
+        echo "tl-sim --all: no examples with a mod.json under $KIT/examples/"
+        exit 2
+    fi
+    if [[ "$missing" == 1 ]]; then
+        echo "some examples have no test file in $KIT/sim/tests/"
+        overall=1
+    fi
+    echo "$ran example test(s) run -- $([[ $overall == 0 ]] && echo ALL PASSED || echo SOME FAILED)"
+    exit "$overall"
+fi
+
+exec "$LUA" "$KIT/sim/run.lua" ${args[@]+"${args[@]}"}

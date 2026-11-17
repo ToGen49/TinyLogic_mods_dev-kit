@@ -79,6 +79,33 @@ documented once its location, parameters and real behaviour are known.** An
 `api.json` entry, an in-game tooltip, or observed output all count; a guessed
 name does not.
 
+### 6.7 Run it without launching the game
+
+```bash
+<kit>/tools/tl-sim <kit>/mods/my-mod              # smoke run: load, run 2 s, report
+<kit>/tools/tl-sim <kit>/mods/my-mod --test FILE  # a real test file
+<kit>/tools/tl-sim --all                          # every example's test
+```
+
+Loads your mod under the **game's own `prelude.lua`** — the real sandbox, the
+real instruction budgets, the real graph compiler — with only the board, the
+clock and the input replaced by a fake `host.*`. Frames are advanced by hand;
+logs, toasts, draws and windows are captured instead of shown. A test file can
+press keys, click, place parts, type commands, then assert on what the mod did:
+
+```lua
+sim.load()
+sim.tick(0.05)
+ok(sim.window("My Tool"), "the window opens")
+sim.command("build")
+eq(#sim.parts(), 3, "the build placed three parts")
+no_faults()
+```
+
+A failed check prints what it expected and what it got, then exits `1` — so it
+drops straight into a pre-commit hook or CI. Full test API, and the limits of
+the circuit model, in [`../sim/README.md`](../sim/README.md).
+
 ---
 
 **Next:** [7. Limits, gotchas and hard constraints](07-limits.md)

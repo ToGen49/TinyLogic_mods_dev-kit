@@ -13,7 +13,7 @@ tl.every(0.5, function()
 
     if not flipping then return end
     for _, p in ipairs(switches) do
-        if p.on then tl.sim.toggle(p.id) end
+        tl.sim.toggle(p.id)
     end
 end)
 

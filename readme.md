@@ -2,7 +2,8 @@
 
 Everything you need to write, test, install and share a Tiny Logic mod: a split
 guide, a template, eleven runnable examples, an offline copy of the official API,
-and scripts to scaffold, validate and install a mod.
+a simulator that runs a mod without starting the game, and scripts to scaffold,
+validate and install a mod.
 
 This kit is **machine-independent**. Folders appear as placeholders — substitute
 your own:
@@ -28,6 +29,7 @@ Details in [`docs/01-environment.md`](docs/01-environment.md).
 ```bash
 <kit>/tools/new-mod.sh my-mod --name "My Mod"   # scaffold from template/
 <kit>/tools/validate.py mods/my-mod             # check it before launching
+<kit>/tools/tl-sim mods/my-mod                  # run it — without starting the game
 <kit>/tools/install.sh mods/my-mod              # copy into <profile>/mods/
 ```
 
@@ -37,6 +39,7 @@ To try an existing example instead:
 
 ```bash
 <kit>/tools/install.sh <kit>/examples/01-window-setting
+<kit>/tools/tl-sim --all                        # run every example's test
 ```
 
 ---
@@ -60,6 +63,7 @@ To try an existing example instead:
 │   └── 11-cheatsheet.md     printable one-pager
 ├── template/          minimal mod skeleton (mod.json + main.lua + graph.json)
 ├── examples/          11 runnable mods, one per recipe
+├── sim/               run and test a mod without starting the game
 ├── api/api.json       offline copy of the game's official reference
 └── tools/             scripts (see below)
 ```
@@ -87,6 +91,7 @@ To try an existing example instead:
 | [`tools/validate.py`](tools/validate.py) | Check `mod.json`, flag `tl.*` names missing from `api/api.json`, error on sandbox violations (`io`, `os`, `require`, `load`, `host.*`) |
 | [`tools/install.sh`](tools/install.sh) | Copy (or `--link`) a mod into `<profile>/mods/`, `--zip` to package it, `--where` to print the detected profile |
 | [`tools/sync-api.sh`](tools/sync-api.sh) | Refresh `api/api.json` after a game update — `--auto`, `--install <path>`, or `--from <file>` |
+| [`tools/tl-sim`](tools/tl-sim) | Run a mod without starting the game — smoke run, one test file, or `--all` |
 
 All of them take `--help`. `install.sh` auto-detects the profile on Linux
 (`$XDG_DATA_HOME` or `~/.local/share`); override with `--profile` or
@@ -94,7 +99,12 @@ All of them take `--help`. `install.sh` auto-detects the profile on Linux
 
 ```bash
 <kit>/tools/validate.py            # no argument = template/ + every example
+<kit>/tools/tl-sim --all           # every example, loaded and driven frame by frame
 ```
+
+`tl-sim` needs **Lua 5.5** (the version the game runs) and uses the game's own
+`prelude.lua` — the installed one when there is a copy, otherwise the one
+bundled in [`sim/`](sim/README.md). Full reference in [`sim/README.md`](sim/README.md).
 
 ### Examples
 
@@ -141,3 +151,6 @@ The full list is [docs/07-limits.md](docs/07-limits.md).
   **and** as a runnable folder in [`examples/`](examples/README.md), then run
   `<kit>/tools/validate.py` — unlisted `tl.*` names fail the check.
 - Game updated? `<kit>/tools/sync-api.sh --auto`, then re-validate everything.
+- Changed an example? `<kit>/tools/tl-sim --all` — every example has a test in
+  [`sim/tests/`](sim/README.md), and a test that no longer holds is a broken
+  example.
