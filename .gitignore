@@ -1,0 +1,28 @@
+# --- Python (tools/validate.py, tools/*.sh heredocs) -------------------------
+__pycache__/
+*.py[cod]
+*.egg-info/
+
+# --- Built by the kit's own tools -------------------------------------------
+# install.sh --zip writes shareable archives here
+dist/
+
+# --- Mods scaffolded locally by tools/new-mod.sh ----------------------------
+# Your own work-in-progress mods live here; they are not part of the kit.
+# Delete these two lines if you decide to track your mods in this repo.
+mods/
+
+# Runtime state the game writes next to a mod — never belongs in the kit
+store.json
+
+# --- Editor / OS droppings ---------------------------------------------------
+.DS_Store
+Thumbs.db
+*.swp
+*~
+.idea/
+.vscode/
+
+# --- Backups the game or editors leave behind --------------------------------
+*.bak
+*.bak.*

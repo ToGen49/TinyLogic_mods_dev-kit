@@ -1,0 +1,8 @@
+{
+ "id": "06-build-circuit",
+ "name": "Build Circuit",
+ "author": "kit",
+ "version": "1.0",
+ "description": "Places parts and wires them up programmatically. Shows tl.board.place, wire, label, find_space, undo.",
+ "enabled": true
+}

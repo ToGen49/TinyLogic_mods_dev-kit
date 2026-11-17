@@ -1,0 +1,8 @@
+{
+ "id": "09-mod-consumer",
+ "name": "Mod Consumer (require + events)",
+ "author": "kit",
+ "version": "1.0",
+ "description": "Uses another mod's exports and listens for events. Install together with 08-mod-library.",
+ "enabled": true
+}

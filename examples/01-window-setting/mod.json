@@ -1,0 +1,8 @@
+{
+ "id": "01-window-setting",
+ "name": "Window + Setting",
+ "author": "kit",
+ "version": "1.0",
+ "description": "A window whose setting survives restarts: slider, bar, button, all saved with tl.store.",
+ "enabled": true
+}

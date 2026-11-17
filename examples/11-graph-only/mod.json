@@ -1,0 +1,8 @@
+{
+ "id": "11-graph-only",
+ "name": "Graph Only",
+ "author": "kit",
+ "version": "1.0",
+ "description": "A mod with no Lua at all: one node chain that toasts every second. Open the Graph tab to read it.",
+ "enabled": true
+}

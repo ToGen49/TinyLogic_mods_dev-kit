@@ -1,0 +1,8 @@
+{
+ "id": "03-screen-overlay",
+ "name": "Screen Overlay",
+ "author": "kit",
+ "version": "1.0",
+ "description": "Follows the mouse with a crosshair and tile readout. Shows tl.input and tl.hud.",
+ "enabled": true
+}

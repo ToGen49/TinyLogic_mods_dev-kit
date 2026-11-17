@@ -1,0 +1,13 @@
+{
+ "links": [
+  { "from": 1, "to": 2, "out": "next", "in": "exec", "exec": true },
+  { "from": 2, "to": 3, "out": "next", "in": "exec", "exec": true },
+  { "from": 1, "to": 4, "out": "next", "in": "exec", "exec": true }
+ ],
+ "nodes": [
+  { "id": 1, "type": "event.every", "values": { "seconds": "1" }, "x": 20.0, "y": 20.0 },
+  { "id": 2, "type": "ui.toast", "values": { "text": "tick", "color": "yellow" }, "x": 180.0, "y": 20.0 },
+  { "id": 3, "type": "ui.log", "values": { "text": "tick" }, "x": 340.0, "y": 20.0 },
+  { "id": 4, "type": "var.add", "values": { "name": "ticks", "by": "1" }, "x": 180.0, "y": 130.0 }
+ ]
+}

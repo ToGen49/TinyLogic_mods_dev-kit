@@ -1,0 +1,8 @@
+{
+ "id": "02-board-overlay",
+ "name": "Board Overlay",
+ "author": "kit",
+ "version": "1.0",
+ "description": "Draws every part's number on the board. Shows tl.draw vs tl.hud coordinates.",
+ "enabled": true
+}

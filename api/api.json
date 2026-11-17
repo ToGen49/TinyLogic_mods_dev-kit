@@ -1,0 +1,677 @@
+{
+ "version": "0.2-beta",
+ "groups": [
+  {
+   "name": "core",
+   "title": "Events and time",
+   "about": "Where every mod starts: listen for something, then do something.",
+   "items": [
+    {
+     "name": "tl.on",
+     "sig": "tl.on(event, fn)",
+     "returns": "handle",
+     "doc": "Run fn whenever an event happens. Built in: load, unload, frame(dt), second, draw, key(name, down), click(x, y), part_placed(part, kind), part_removed(part), wire_added(wire), wire_removed(wire). Any other name is a custom event."
+    },
+    {
+     "name": "tl.off",
+     "sig": "tl.off(handle)",
+     "returns": "",
+     "doc": "Stop a listener that tl.on gave back."
+    },
+    {
+     "name": "tl.emit",
+     "sig": "tl.emit(event, ...)",
+     "returns": "",
+     "doc": "Send an event to every running mod, this one too."
+    },
+    {
+     "name": "tl.after",
+     "sig": "tl.after(seconds, fn)",
+     "returns": "timer",
+     "doc": "Run fn once, this many seconds from now."
+    },
+    {
+     "name": "tl.every",
+     "sig": "tl.every(seconds, fn)",
+     "returns": "timer",
+     "doc": "Run fn again and again, this many seconds apart."
+    },
+    {
+     "name": "tl.cancel",
+     "sig": "tl.cancel(timer)",
+     "returns": "",
+     "doc": "Stop a timer from tl.after or tl.every."
+    },
+    {
+     "name": "tl.time",
+     "sig": "tl.time()",
+     "returns": "seconds",
+     "doc": "Seconds since the mods started."
+    },
+    {
+     "name": "tl.log",
+     "sig": "tl.log(...)",
+     "returns": "",
+     "doc": "Write a line to this mod's console. print does the same."
+    },
+    {
+     "name": "tl.warn",
+     "sig": "tl.warn(...)",
+     "returns": "",
+     "doc": "Write a yellow line to this mod's console."
+    },
+    {
+     "name": "tl.command",
+     "sig": "tl.command(name, fn)",
+     "returns": "",
+     "doc": "Add a console command: typing `name the rest` calls fn(\"the rest\")."
+    },
+    {
+     "name": "tl.version",
+     "sig": "tl.version",
+     "returns": "string",
+     "doc": "The mod API version."
+    },
+    {
+     "name": "tl.id",
+     "sig": "tl.id",
+     "returns": "string",
+     "doc": "This mod's id."
+    },
+    {
+     "name": "vars",
+     "sig": "vars",
+     "returns": "table",
+     "doc": "A table shared by this mod's script and its node graph."
+    }
+   ]
+  },
+  {
+   "name": "mods",
+   "title": "Other mods",
+   "about": "Mods can lean on each other: one exports, another requires.",
+   "items": [
+    {
+     "name": "tl.export",
+     "sig": "tl.export(name, value)",
+     "returns": "",
+     "doc": "Offer a value or a function to other mods."
+    },
+    {
+     "name": "tl.require",
+     "sig": "tl.require(id)",
+     "returns": "exports",
+     "doc": "Everything another running mod exported, or nil and why."
+    },
+    {
+     "name": "tl.mods",
+     "sig": "tl.mods()",
+     "returns": "ids",
+     "doc": "The ids of every running mod, in load order."
+    },
+    {
+     "name": "tl.call",
+     "sig": "tl.call(op, args)",
+     "returns": "result",
+     "doc": "The raw engine interface every other function is built on. Ops: state, board, part, probe, place, wire, delete, move, rotate, set, press, clock, camera, focus, find_space, catalog, select, duplicate, truth_table, undo, redo and more. Returns the result table, or nil and why."
+    }
+   ]
+  },
+  {
+   "name": "board",
+   "title": "The board",
+   "about": "Place, wire, move and remove parts. Positions are in tiles.",
+   "items": [
+    {
+     "name": "tl.board.place",
+     "sig": "tl.board.place(name, x, y, opts)",
+     "returns": "id, part",
+     "doc": "Place a part by its finder name (\"switch\", \"light\", \"nand\"...). Leave x, y out for the nearest free spot. opts sets it up: {label=, on=, number=, bits=, color=}."
+    },
+    {
+     "name": "tl.board.chip",
+     "sig": "tl.board.chip(name, x, y)",
+     "returns": "id, part",
+     "doc": "Place one of the project's own chips by name."
+    },
+    {
+     "name": "tl.board.wire",
+     "sig": "tl.board.wire(a, pin_a, b, pin_b, color)",
+     "returns": "wire",
+     "doc": "Wire pin_a of part a to pin_b of part b. A pin is its number (they count from 0) or its name (\"out\", \"a\"). color is 0 to 8 or a wire colour name."
+    },
+    {
+     "name": "tl.board.remove",
+     "sig": "tl.board.remove(...)",
+     "returns": "count",
+     "doc": "Remove parts: ids, part tables or one list of them."
+    },
+    {
+     "name": "tl.board.remove_wire",
+     "sig": "tl.board.remove_wire(...)",
+     "returns": "count",
+     "doc": "Remove wires by id."
+    },
+    {
+     "name": "tl.board.parts",
+     "sig": "tl.board.parts(kind)",
+     "returns": "parts",
+     "doc": "Every part on this level, or only one kind (\"light\", \"switch\", \"chip\"...). Each has id, kind, name, x, y, w, h, rot, on, value, label."
+    },
+    {
+     "name": "tl.board.wires",
+     "sig": "tl.board.wires(paths)",
+     "returns": "wires",
+     "doc": "Every wire: id, from, to, color. from and to are two-item lists: w.from[1] is the part, w.from[2] is the pin. Pass true to get each wire's path and amps too."
+    },
+    {
+     "name": "tl.board.part",
+     "sig": "tl.board.part(id)",
+     "returns": "part",
+     "doc": "One part with its pins, what it says and its status. Gives nothing back if the part is gone."
+    },
+    {
+     "name": "tl.board.pins",
+     "sig": "tl.board.pins(id)",
+     "returns": "pins",
+     "doc": "A part's pins."
+    },
+    {
+     "name": "tl.board.set",
+     "sig": "tl.board.set(id, props)",
+     "returns": "part",
+     "doc": "Change a part: {on=, number=, bits=, value=, label=, color=, rot=, flip=}."
+    },
+    {
+     "name": "tl.board.label",
+     "sig": "tl.board.label(id, text)",
+     "returns": "part",
+     "doc": "Give a part a label."
+    },
+    {
+     "name": "tl.board.move",
+     "sig": "tl.board.move(id, x, y)",
+     "returns": "part",
+     "doc": "Move a part to a tile. Its wires follow."
+    },
+    {
+     "name": "tl.board.rotate",
+     "sig": "tl.board.rotate(id, flip)",
+     "returns": "",
+     "doc": "Turn a part a quarter turn, or mirror it when flip is true."
+    },
+    {
+     "name": "tl.board.wire_color",
+     "sig": "tl.board.wire_color(wire, color)",
+     "returns": "",
+     "doc": "Recolour a wire, 0 to 8."
+    },
+    {
+     "name": "tl.board.clear",
+     "sig": "tl.board.clear()",
+     "returns": "",
+     "doc": "Remove everything on this level."
+    },
+    {
+     "name": "tl.board.find_space",
+     "sig": "tl.board.find_space(w, h, near_x, near_y)",
+     "returns": "x, y",
+     "doc": "A free spot big enough for w by h tiles."
+    },
+    {
+     "name": "tl.board.catalog",
+     "sig": "tl.board.catalog()",
+     "returns": "items",
+     "doc": "Everything the part finder offers."
+    },
+    {
+     "name": "tl.board.select",
+     "sig": "tl.board.select(ids)",
+     "returns": "",
+     "doc": "Select these parts."
+    },
+    {
+     "name": "tl.board.selection",
+     "sig": "tl.board.selection()",
+     "returns": "ids",
+     "doc": "What the player has selected."
+    },
+    {
+     "name": "tl.board.count",
+     "sig": "tl.board.count()",
+     "returns": "parts, wires",
+     "doc": "How many parts and wires are on this level."
+    },
+    {
+     "name": "tl.board.undo",
+     "sig": "tl.board.undo()",
+     "returns": "",
+     "doc": "Undo the last change. Everything a mod does lands in the player's undo history."
+    },
+    {
+     "name": "tl.board.redo",
+     "sig": "tl.board.redo()",
+     "returns": "",
+     "doc": "Redo."
+    }
+   ]
+  },
+  {
+   "name": "sim",
+   "title": "The simulation",
+   "about": "Read what the circuit is doing and push its switches and buttons.",
+   "items": [
+    {
+     "name": "tl.sim.read",
+     "sig": "tl.sim.read(id, pin)",
+     "returns": "value, volts",
+     "doc": "What a part shows (a light's 1 or 0, a display's number), or what one pin carries."
+    },
+    {
+     "name": "tl.sim.read_all",
+     "sig": "tl.sim.read_all(ids)",
+     "returns": "values",
+     "doc": "Read many parts in one go."
+    },
+    {
+     "name": "tl.sim.set",
+     "sig": "tl.sim.set(id, on)",
+     "returns": "",
+     "doc": "Close or open a switch."
+    },
+    {
+     "name": "tl.sim.toggle",
+     "sig": "tl.sim.toggle(id)",
+     "returns": "",
+     "doc": "Flip a switch."
+    },
+    {
+     "name": "tl.sim.press",
+     "sig": "tl.sim.press(id, down)",
+     "returns": "",
+     "doc": "Hold a push button down, or let it go."
+    },
+    {
+     "name": "tl.sim.tap",
+     "sig": "tl.sim.tap(id, seconds)",
+     "returns": "",
+     "doc": "Press a push button and let go a moment later."
+    },
+    {
+     "name": "tl.sim.number",
+     "sig": "tl.sim.number(id, n)",
+     "returns": "",
+     "doc": "Set a number input."
+    },
+    {
+     "name": "tl.sim.clock",
+     "sig": "tl.sim.clock(action, id)",
+     "returns": "",
+     "doc": "\"play\", \"pause\", \"step\" or \"restart\" a clock."
+    },
+    {
+     "name": "tl.sim.speed",
+     "sig": "tl.sim.speed(n, id)",
+     "returns": "",
+     "doc": "A clock's speed, 0 to 9."
+    },
+    {
+     "name": "tl.sim.step",
+     "sig": "tl.sim.step(times, id)",
+     "returns": "",
+     "doc": "Step a paused clock."
+    },
+    {
+     "name": "tl.sim.watch",
+     "sig": "tl.sim.watch(id, pin, fn)",
+     "returns": "watch",
+     "doc": "Call fn(value, before) whenever a reading changes. pin is optional."
+    },
+    {
+     "name": "tl.sim.unwatch",
+     "sig": "tl.sim.unwatch(watch)",
+     "returns": "",
+     "doc": "Stop watching."
+    },
+    {
+     "name": "tl.sim.state",
+     "sig": "tl.sim.state()",
+     "returns": "state",
+     "doc": "The editor's state: project, level, camera, parts, wires, short_circuit, unstable, clock_running..."
+    },
+    {
+     "name": "tl.sim.truth_table",
+     "sig": "tl.sim.truth_table(args)",
+     "returns": "table",
+     "doc": "Work out a circuit's truth table."
+    }
+   ]
+  },
+  {
+   "name": "elec",
+   "title": "Electric parts",
+   "about": "Settings by name for the analog parts (supplies, sources, resistors, capacitors, coils, semiconductors) and what they measure: volts, amps and meter readings.",
+   "items": [
+    {
+     "name": "tl.elec.settings",
+     "sig": "tl.elec.settings(id)",
+     "returns": "settings, names",
+     "doc": "Every electric setting of a part by name, as it is now, and their names in order. A resistor has ohms; a function generator hz, height, center and width; a bench supply volts and limit. Values are in SI units."
+    },
+    {
+     "name": "tl.elec.get",
+     "sig": "tl.elec.get(id, name)",
+     "returns": "value",
+     "doc": "One setting by name (nil when the part has no such setting)."
+    },
+    {
+     "name": "tl.elec.set",
+     "sig": "tl.elec.set(id, name, value)",
+     "returns": "ok",
+     "doc": "Change one setting, or several at once with a table: tl.elec.set(gen, {hz = 440, height = 2}). The same as typing it on the part's card, so one undo brings it back. A name the part doesn't have is an error that lists the ones it does."
+    },
+    {
+     "name": "tl.elec.volts",
+     "sig": "tl.elec.volts(id, pin, other)",
+     "returns": "volts",
+     "doc": "The volts on a pin against ground, or between two pins of the same part when other is given."
+    },
+    {
+     "name": "tl.elec.amps",
+     "sig": "tl.elec.amps(id)",
+     "returns": "amps",
+     "doc": "The current through a part, in amps. 0 when none flows."
+    },
+    {
+     "name": "tl.elec.meter",
+     "sig": "tl.elec.meter(id)",
+     "returns": "reading",
+     "doc": "What a voltmeter (volts across its probes) or an ammeter (amps through it) reads."
+    },
+    {
+     "name": "tl.elec.watch",
+     "sig": "tl.elec.watch(id, pin, fn, step)",
+     "returns": "watch",
+     "doc": "Call fn(volts, before) whenever a pin's volts have moved by step from the last value told (0.1 V unless given). Checked once a frame."
+    },
+    {
+     "name": "tl.elec.unwatch",
+     "sig": "tl.elec.unwatch(watch)",
+     "returns": "",
+     "doc": "Stop watching."
+    }
+   ]
+  },
+  {
+   "name": "draw",
+   "title": "Drawing",
+   "about": "tl.draw paints on the board (16 board pixels to a tile) and moves with the camera. tl.hud paints on the screen (480 by 270). Draw inside a draw or frame event: the picture is wiped every frame.",
+   "items": [
+    {
+     "name": "tl.draw.rect",
+     "sig": "tl.draw.rect(x, y, w, h, color, alpha)",
+     "returns": "",
+     "doc": "A filled box on the board, in board pixels."
+    },
+    {
+     "name": "tl.draw.frame",
+     "sig": "tl.draw.frame(x, y, w, h, color, alpha)",
+     "returns": "",
+     "doc": "An outline on the board."
+    },
+    {
+     "name": "tl.draw.text",
+     "sig": "tl.draw.text(text, x, y, color, scale)",
+     "returns": "",
+     "doc": "Words on the board."
+    },
+    {
+     "name": "tl.draw.measure",
+     "sig": "tl.draw.measure(text, scale)",
+     "returns": "w, h",
+     "doc": "How wide and tall some words come out, in pixels, before they're drawn. For centring text or putting a box behind it."
+    },
+    {
+     "name": "tl.draw.pixel",
+     "sig": "tl.draw.pixel(x, y, color)",
+     "returns": "",
+     "doc": "One board pixel."
+    },
+    {
+     "name": "tl.draw.line",
+     "sig": "tl.draw.line(x0, y0, x1, y1, color)",
+     "returns": "",
+     "doc": "A line on the board."
+    },
+    {
+     "name": "tl.draw.tile",
+     "sig": "tl.draw.tile(tx, ty, color, alpha)",
+     "returns": "",
+     "doc": "Fill one whole tile."
+    },
+    {
+     "name": "tl.draw.cell",
+     "sig": "tl.draw.cell(tx, ty, color, inset)",
+     "returns": "",
+     "doc": "Fill a tile with a gap round it."
+    },
+    {
+     "name": "tl.hud.rect",
+     "sig": "tl.hud.rect(x, y, w, h, color, alpha)",
+     "returns": "",
+     "doc": "A filled box on the screen."
+    },
+    {
+     "name": "tl.hud.frame",
+     "sig": "tl.hud.frame(x, y, w, h, color, alpha)",
+     "returns": "",
+     "doc": "An outline on the screen."
+    },
+    {
+     "name": "tl.hud.text",
+     "sig": "tl.hud.text(text, x, y, color, scale)",
+     "returns": "",
+     "doc": "Words on the screen."
+    },
+    {
+     "name": "tl.hud.measure",
+     "sig": "tl.hud.measure(text, scale)",
+     "returns": "w, h",
+     "doc": "How wide and tall some words come out, in pixels, before they're drawn. For centring text or putting a box behind it."
+    },
+    {
+     "name": "tl.hud.pixel",
+     "sig": "tl.hud.pixel(x, y, color)",
+     "returns": "",
+     "doc": "One screen pixel."
+    },
+    {
+     "name": "tl.hud.line",
+     "sig": "tl.hud.line(x0, y0, x1, y1, color)",
+     "returns": "",
+     "doc": "A line on the screen."
+    },
+    {
+     "name": "tl.hud.size",
+     "sig": "tl.hud.size()",
+     "returns": "w, h",
+     "doc": "The screen's size: 480, 270."
+    },
+    {
+     "name": "tl.color",
+     "sig": "tl.color(r, g, b, a)",
+     "returns": "color",
+     "doc": "A colour from 0 to 255 parts, a name (\"red\", \"green\", \"yellow\", \"blue\", \"cyan\", \"purple\", \"pink\", \"orange\", \"white\", \"black\", \"ink\", \"muted\", \"gray\") or a hex string (\"#5fe08a\")."
+    },
+    {
+     "name": "tl.hsv",
+     "sig": "tl.hsv(h, s, v)",
+     "returns": "color",
+     "doc": "A colour from hue (0 to 1), saturation and value."
+    }
+   ]
+  },
+  {
+   "name": "ui",
+   "title": "Windows",
+   "about": "Little windows a mod puts up. The function you give runs every frame and lists what is in the window, top to bottom.",
+   "items": [
+    {
+     "name": "tl.ui.toast",
+     "sig": "tl.ui.toast(text, color)",
+     "returns": "",
+     "doc": "A short message at the bottom of the screen."
+    },
+    {
+     "name": "tl.ui.window",
+     "sig": "tl.ui.window(title, fn, opts)",
+     "returns": "window",
+     "doc": "Open a window. fn(ui, window) runs every frame and fills it with labels, buttons and bars. opts: {x=, y=, w=}. The handle has close()."
+    },
+    {
+     "name": "tl.ui.label",
+     "sig": "tl.ui.label(text, color)",
+     "returns": "",
+     "doc": "A line of words."
+    },
+    {
+     "name": "tl.ui.button",
+     "sig": "tl.ui.button(label)",
+     "returns": "clicked",
+     "doc": "A button. True on the frame it was clicked."
+    },
+    {
+     "name": "tl.ui.toggle",
+     "sig": "tl.ui.toggle(label, value)",
+     "returns": "value",
+     "doc": "A switch. Give it the value, get the new value back."
+    },
+    {
+     "name": "tl.ui.slider",
+     "sig": "tl.ui.slider(label, value, lo, hi)",
+     "returns": "value",
+     "doc": "A slider. Give it the value, get the new value back."
+    },
+    {
+     "name": "tl.ui.bar",
+     "sig": "tl.ui.bar(label, fraction, color)",
+     "returns": "",
+     "doc": "A progress bar, 0 to 1."
+    },
+    {
+     "name": "tl.ui.space",
+     "sig": "tl.ui.space(px)",
+     "returns": "",
+     "doc": "A gap."
+    }
+   ]
+  },
+  {
+   "name": "input",
+   "title": "Keys and the mouse",
+   "about": "Read the keyboard and the mouse, or take the keys over for a game.",
+   "items": [
+    {
+     "name": "tl.input.key",
+     "sig": "tl.input.key(name)",
+     "returns": "down",
+     "doc": "Is a key held right now? \"a\", \"space\", \"left\", \"return\"..."
+    },
+    {
+     "name": "tl.input.capture",
+     "sig": "tl.input.capture(on)",
+     "returns": "",
+     "doc": "While on, key presses go to this mod and not to the editor's shortcuts. Escape always gives them back."
+    },
+    {
+     "name": "tl.input.mouse",
+     "sig": "tl.input.mouse()",
+     "returns": "mouse",
+     "doc": "{x, y, tile_x, tile_y, down}: where the mouse is on the screen and on the board."
+    }
+   ]
+  },
+  {
+   "name": "sound",
+   "title": "Sound",
+   "about": "The game's own sounds and a tiny synth.",
+   "items": [
+    {
+     "name": "tl.sound.play",
+     "sig": "tl.sound.play(name, pitch)",
+     "returns": "",
+     "doc": "hover, click, confirm, tick, pop, boom, whoosh, zap, error, switch, thump, riser, crton, crtoff, glitch, snore, knock, sparkle."
+    },
+    {
+     "name": "tl.sound.note",
+     "sig": "tl.sound.note(hz, seconds, volume, tone)",
+     "returns": "",
+     "doc": "One note. tone is \"square\", \"triangle\", \"sine\" or \"noise\"."
+    }
+   ]
+  },
+  {
+   "name": "store",
+   "title": "Saving",
+   "about": "What a mod remembers between sessions. Kept in the mod's own folder.",
+   "items": [
+    {
+     "name": "tl.store.get",
+     "sig": "tl.store.get(key, default)",
+     "returns": "value",
+     "doc": "Read a saved value."
+    },
+    {
+     "name": "tl.store.set",
+     "sig": "tl.store.set(key, value)",
+     "returns": "",
+     "doc": "Save a value: numbers, strings, booleans and tables of them."
+    }
+   ]
+  },
+  {
+   "name": "camera",
+   "title": "The camera",
+   "about": "Move the player's view.",
+   "items": [
+    {
+     "name": "tl.camera.get",
+     "sig": "tl.camera.get()",
+     "returns": "{x, y, zoom}",
+     "doc": "Where the view is."
+    },
+    {
+     "name": "tl.camera.go",
+     "sig": "tl.camera.go(x, y, zoom)",
+     "returns": "",
+     "doc": "Glide the view to a board position."
+    },
+    {
+     "name": "tl.camera.fit",
+     "sig": "tl.camera.fit()",
+     "returns": "",
+     "doc": "Fit the whole board in view."
+    },
+    {
+     "name": "tl.camera.focus",
+     "sig": "tl.camera.focus(ids)",
+     "returns": "",
+     "doc": "Bring these parts into view."
+    }
+   ]
+  },
+  {
+   "name": "graph",
+   "title": "Extending the editor",
+   "about": "A mod can add its own node types to the visual scripting editor, for itself and for every other mod.",
+   "items": [
+    {
+     "name": "tl.graph.node",
+     "sig": "tl.graph.node(def)",
+     "returns": "",
+     "doc": "Add a node type. def: {id=, cat=, title=, kind=\"action\"|\"value\"|\"event\"|\"flow\", ins={{name, type, default}}, outs={{name, type}}, code=, expr=, tip=}. In code and expr, $name is an input and @name an output."
+    }
+   ]
+  }
+ ]
+}

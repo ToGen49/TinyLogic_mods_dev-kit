@@ -1,0 +1,8 @@
+{
+ "id": "04-timer-watch",
+ "name": "Timer + Watch",
+ "author": "kit",
+ "version": "1.0",
+ "description": "Drives switches on a timer and watches a light without polling. Shows tl.every, tl.after, tl.sim.watch.",
+ "enabled": true
+}

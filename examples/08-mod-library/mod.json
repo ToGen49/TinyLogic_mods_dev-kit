@@ -1,0 +1,8 @@
+{
+ "id": "08-mod-library",
+ "name": "Mod Library (exports)",
+ "author": "kit",
+ "version": "1.0",
+ "description": "Offers functions to other mods with tl.export. Install together with 09-mod-consumer.",
+ "enabled": true
+}

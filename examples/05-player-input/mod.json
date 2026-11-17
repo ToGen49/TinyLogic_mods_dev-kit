@@ -1,0 +1,8 @@
+{
+ "id": "05-player-input",
+ "name": "Player Input",
+ "author": "kit",
+ "version": "1.0",
+ "description": "Keyboard and mouse handling with key capture. Shows tl.input, tl.on key/click, tl.sound.",
+ "enabled": true
+}

@@ -1,0 +1,8 @@
+{
+ "id": "10-custom-node",
+ "name": "Custom Node",
+ "author": "kit",
+ "version": "1.0",
+ "description": "Adds new node types to the graph editor for every mod. Shows tl.graph.node.",
+ "enabled": true
+}

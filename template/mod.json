@@ -1,0 +1,8 @@
+{
+ "id": "my-mod",
+ "name": "My Mod",
+ "author": "you",
+ "version": "1.0",
+ "description": "A new mod.",
+ "enabled": true
+}

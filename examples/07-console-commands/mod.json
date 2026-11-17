@@ -1,0 +1,8 @@
+{
+ "id": "07-console-commands",
+ "name": "Console Commands",
+ "author": "kit",
+ "version": "1.0",
+ "description": "Adds commands you type in the mod's console. Shows tl.command, tl.log, tl.warn.",
+ "enabled": true
+}

@@ -1,0 +1,5 @@
+-- 11-graph-only — this mod does nothing in Lua.
+-- Recipe 10.11 in docs/10-recipes.md.
+--
+-- Everything happens in graph.json: open the Graph tab and read the chain.
+-- main.lua can be empty or comments only, as long as graph.json has nodes.
